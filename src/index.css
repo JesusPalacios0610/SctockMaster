@@ -1,0 +1,6 @@
+@import "tailwindcss";
+body{font-family:Inter,system-ui,sans-serif;background:#f4f6fa;color:#0f1b2d}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pop{animation:pop .18s ease-out}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{aside,header,.noprint{display:none!important}}
