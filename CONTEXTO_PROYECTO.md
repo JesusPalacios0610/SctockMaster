@@ -55,6 +55,8 @@ Flujo: React → HTTP/JSON → Controller → Service → Repository → Postgre
 
 Organiza el código por capas en paquetes dentro del paquete base que ya existe en `backend/src/main/java`: `controller`, `service`, `repository`, `entity` y `dto`.
 
+- Los controladores nunca reciben ni devuelven entidades JPA: usan DTOs (paquete `dto`). La respuesta de usuario nunca incluye `contrasena`. El servicio convierte entre entidad y DTO.
+
 Como el frontend y el backend corren en puertos distintos, hay que configurar **CORS** en Spring Boot para permitir `http://localhost:5173` en las rutas `/api/**`. Todas las rutas de la API empiezan con `/api`.
 
 ## 6. Base de datos: reglas importantes
