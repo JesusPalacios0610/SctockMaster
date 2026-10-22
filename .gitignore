@@ -2,3 +2,7 @@ node_modules
 dist
 .env
 *.log
+
+# Configuracion local privada (credenciales BD)
+application-local.properties
+*local.properties
