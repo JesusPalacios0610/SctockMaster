@@ -3,6 +3,7 @@ package com.proyecto.electromarket.service;
 import com.proyecto.electromarket.dto.ProductoRequest;
 import com.proyecto.electromarket.dto.ProductoResponse;
 import com.proyecto.electromarket.entity.Producto;
+import com.proyecto.electromarket.exception.RecursoNoEncontradoException;
 import com.proyecto.electromarket.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class ProductoServiceImpl implements ProductoService {
     @Transactional(readOnly = true)
     public ProductoResponse buscarPorId(Integer id) {
         Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el producto con ID: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el producto con ID: " + id));
         return convertirAProductoResponse(producto);
     }
 
@@ -86,7 +87,7 @@ public class ProductoServiceImpl implements ProductoService {
     @Transactional
     public ProductoResponse actualizar(Integer id, ProductoRequest request) {
         Producto existente = productoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el producto con ID: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el producto con ID: " + id));
 
         String nuevoSku = request.getCodigoSku().trim();
         // Si el SKU cambió, validamos que no esté en uso por otro producto

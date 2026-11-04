@@ -3,6 +3,7 @@ package com.proyecto.electromarket.service;
 import com.proyecto.electromarket.dto.ProveedorRequest;
 import com.proyecto.electromarket.dto.ProveedorResponse;
 import com.proyecto.electromarket.entity.Proveedor;
+import com.proyecto.electromarket.exception.RecursoNoEncontradoException;
 import com.proyecto.electromarket.repository.ProveedorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Transactional(readOnly = true)
     public ProveedorResponse buscarPorId(Integer id) {
         Proveedor proveedor = proveedorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el proveedor con ID: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el proveedor con ID: " + id));
         return convertirAProveedorResponse(proveedor);
     }
 
@@ -41,7 +42,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     public ProveedorResponse buscarPorRuc(String ruc) {
         String rucLimpio = ruc != null ? ruc.trim() : "";
         Proveedor proveedor = proveedorRepository.findByRuc(rucLimpio)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el proveedor con RUC: " + rucLimpio));
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el proveedor con RUC: " + rucLimpio));
         return convertirAProveedorResponse(proveedor);
     }
 
@@ -70,7 +71,7 @@ public class ProveedorServiceImpl implements ProveedorService {
     @Transactional
     public ProveedorResponse actualizar(Integer id, ProveedorRequest request) {
         Proveedor existente = proveedorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el proveedor con ID: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el proveedor con ID: " + id));
 
         String nuevoRuc = request.getRuc().trim();
 
