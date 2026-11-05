@@ -26,6 +26,10 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     @Query("SELECT p FROM Producto p WHERE p.stockActual <= p.stockMinimo")
     List<Producto> findProductosConBajoStock();
 
+    // Consulta para Alertas ordenadas de menor a mayor stock
+    @Query("SELECT p FROM Producto p WHERE p.stockActual <= p.stockMinimo ORDER BY p.stockActual ASC")
+    List<Producto> findProductosAlertaStock();
+
     // Buscar producto con bloqueo pesimista de escritura (SELECT ... FOR UPDATE) para evitar condiciones de carrera en el stock
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Producto p WHERE p.idProducto = :id")

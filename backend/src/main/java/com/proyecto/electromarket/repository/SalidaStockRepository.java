@@ -2,6 +2,8 @@ package com.proyecto.electromarket.repository;
 
 import com.proyecto.electromarket.entity.SalidaStock;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
@@ -17,4 +19,8 @@ public interface SalidaStockRepository extends JpaRepository<SalidaStock, Intege
 
     // Listar todas ordenadas por fecha descendente
     List<SalidaStock> findAllByOrderByFechaDesc();
+
+    // Sumar salidas de un producto en una fecha dada usando COALESCE para devolver 0 si no hay registros
+    @Query("SELECT COALESCE(SUM(s.cantidad), 0) FROM SalidaStock s WHERE s.producto.idProducto = :idProducto AND s.fecha = :fecha")
+    Integer sumarSalidasPorProductoYFecha(@Param("idProducto") Integer idProducto, @Param("fecha") LocalDate fecha);
 }
