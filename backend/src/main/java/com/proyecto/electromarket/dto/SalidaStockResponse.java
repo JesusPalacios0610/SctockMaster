@@ -11,6 +11,7 @@ public class SalidaStockResponse {
     private String nombreProducto;
     private Integer idUsuario;
     private String nombreUsuario; // Seguro: sin contraseña
+    private String documento;
     private LocalDate fecha;
     private String tipoSalida;
     private Integer cantidad;
@@ -23,14 +24,15 @@ public class SalidaStockResponse {
 
     public SalidaStockResponse(Integer idSalida, Integer idProducto, String codigoSku,
                                String nombreProducto, Integer idUsuario, String nombreUsuario,
-                               LocalDate fecha, String tipoSalida, Integer cantidad,
-                               Integer stockRestante, LocalDateTime fechaCreacion) {
+                               String documento, LocalDate fecha, String tipoSalida,
+                               Integer cantidad, Integer stockRestante, LocalDateTime fechaCreacion) {
         this.idSalida = idSalida;
         this.idProducto = idProducto;
         this.codigoSku = codigoSku;
         this.nombreProducto = nombreProducto;
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
+        this.documento = documento;
         this.fecha = fecha;
         this.tipoSalida = tipoSalida;
         this.cantidad = cantidad;
@@ -85,6 +87,14 @@ public class SalidaStockResponse {
 
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     public LocalDate getFecha() {

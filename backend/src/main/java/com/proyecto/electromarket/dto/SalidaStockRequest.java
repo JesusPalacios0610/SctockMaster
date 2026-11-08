@@ -3,6 +3,7 @@ package com.proyecto.electromarket.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public class SalidaStockRequest {
@@ -12,6 +13,9 @@ public class SalidaStockRequest {
 
     @NotNull(message = "El ID del usuario es obligatorio")
     private Integer idUsuario;
+
+    @Size(max = 20, message = "El documento no puede superar los 20 caracteres")
+    private String documento;
 
     @NotBlank(message = "El tipo de salida es obligatorio")
     private String tipoSalida;
@@ -27,9 +31,11 @@ public class SalidaStockRequest {
     public SalidaStockRequest() {
     }
 
-    public SalidaStockRequest(Integer idProducto, Integer idUsuario, String tipoSalida, Integer cantidad, LocalDate fecha) {
+    public SalidaStockRequest(Integer idProducto, Integer idUsuario, String documento,
+                              String tipoSalida, Integer cantidad, LocalDate fecha) {
         this.idProducto = idProducto;
         this.idUsuario = idUsuario;
+        this.documento = documento;
         this.tipoSalida = tipoSalida;
         this.cantidad = cantidad;
         this.fecha = fecha;
@@ -50,6 +56,14 @@ public class SalidaStockRequest {
 
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     public String getTipoSalida() {

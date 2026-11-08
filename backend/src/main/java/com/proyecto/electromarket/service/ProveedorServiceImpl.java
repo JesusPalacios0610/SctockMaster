@@ -1,5 +1,6 @@
 package com.proyecto.electromarket.service;
 
+import com.proyecto.electromarket.dto.EstadoRequest;
 import com.proyecto.electromarket.dto.ProveedorRequest;
 import com.proyecto.electromarket.dto.ProveedorResponse;
 import com.proyecto.electromarket.entity.Proveedor;
@@ -15,7 +16,6 @@ public class ProveedorServiceImpl implements ProveedorService {
 
     private final ProveedorRepository proveedorRepository;
 
-    // Inyección de dependencias por constructor
     public ProveedorServiceImpl(ProveedorRepository proveedorRepository) {
         this.proveedorRepository = proveedorRepository;
     }
@@ -59,8 +59,11 @@ public class ProveedorServiceImpl implements ProveedorService {
         Proveedor nuevo = new Proveedor();
         nuevo.setRuc(rucLimpio);
         nuevo.setRazonSocial(request.getRazonSocial().trim());
-        nuevo.setContacto(request.getContacto() != null ? request.getContacto().trim() : null);
+        nuevo.setContacto(limpiarTexto(request.getContacto()));
+        nuevo.setTelefono(limpiarTexto(request.getTelefono()));
+        nuevo.setCorreo(limpiarTexto(request.getCorreo()));
         nuevo.setTiempoEntrega(request.getTiempoEntrega());
+        nuevo.setActivo(true); // Siempre activo al crearse
         nuevo.setUsuarioActualizacion(request.getIdUsuario());
 
         Proveedor guardado = proveedorRepository.save(nuevo);
@@ -82,12 +85,40 @@ public class ProveedorServiceImpl implements ProveedorService {
 
         existente.setRuc(nuevoRuc);
         existente.setRazonSocial(request.getRazonSocial().trim());
-        existente.setContacto(request.getContacto() != null ? request.getContacto().trim() : null);
+        existente.setContacto(limpiarTexto(request.getContacto()));
+        existente.setTelefono(limpiarTexto(request.getTelefono()));
+        existente.setCorreo(limpiarTexto(request.getCorreo()));
         existente.setTiempoEntrega(request.getTiempoEntrega());
+        // El PUT NO modifica "activo"
         existente.setUsuarioActualizacion(request.getIdUsuario());
 
         Proveedor actualizado = proveedorRepository.save(existente);
         return convertirAProveedorResponse(actualizado);
+    }
+
+    @Override
+    @Transactional
+    public ProveedorResponse cambiarEstado(Integer id, EstadoRequest request) {
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el proveedor con ID: " + id));
+
+        proveedor.setActivo(request.getActivo());
+        // Solo actualizar usuarioActualizacion si idUsuario viene con valor
+        if (request.getIdUsuario() != null) {
+            proveedor.setUsuarioActualizacion(request.getIdUsuario());
+        }
+
+        Proveedor actualizado = proveedorRepository.save(proveedor);
+        return convertirAProveedorResponse(actualizado);
+    }
+
+    // Auxiliar para aplicar trim y guardar null si viene vacío o null
+    private String limpiarTexto(String texto) {
+        if (texto == null) {
+            return null;
+        }
+        String limpio = texto.trim();
+        return limpio.isEmpty() ? null : limpio;
     }
 
     // Conversión de Entidad Proveedor a ProveedorResponse DTO
@@ -97,7 +128,10 @@ public class ProveedorServiceImpl implements ProveedorService {
                 p.getRuc(),
                 p.getRazonSocial(),
                 p.getContacto(),
+                p.getTelefono(),
+                p.getCorreo(),
                 p.getTiempoEntrega(),
+                p.getActivo(),
                 p.getFechaCreacion(),
                 p.getFechaActualizacion()
         );

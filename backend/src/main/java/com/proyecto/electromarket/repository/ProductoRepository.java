@@ -22,12 +22,12 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     // Búsqueda por nombre o por SKU ignorando mayúsculas/minúsculas (para el buscador del frontend)
     List<Producto> findByNombreContainingIgnoreCaseOrCodigoSkuContainingIgnoreCase(String nombre, String codigoSku);
 
-    // Alerta de stock mínimo: productos donde stock_actual <= stock_minimo
-    @Query("SELECT p FROM Producto p WHERE p.stockActual <= p.stockMinimo")
+    // Alerta de stock mínimo: solo productos ACTIVOS donde stock_actual <= stock_minimo
+    @Query("SELECT p FROM Producto p WHERE p.activo = true AND p.stockActual <= p.stockMinimo")
     List<Producto> findProductosConBajoStock();
 
-    // Consulta para Alertas ordenadas de menor a mayor stock
-    @Query("SELECT p FROM Producto p WHERE p.stockActual <= p.stockMinimo ORDER BY p.stockActual ASC")
+    // Consulta para Alertas ordenadas de menor a mayor stock: solo productos ACTIVOS
+    @Query("SELECT p FROM Producto p WHERE p.activo = true AND p.stockActual <= p.stockMinimo ORDER BY p.stockActual ASC")
     List<Producto> findProductosAlertaStock();
 
     // Buscar producto con bloqueo pesimista de escritura (SELECT ... FOR UPDATE) para evitar condiciones de carrera en el stock

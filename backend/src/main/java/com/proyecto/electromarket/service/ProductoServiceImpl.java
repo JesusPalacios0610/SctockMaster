@@ -1,5 +1,6 @@
 package com.proyecto.electromarket.service;
 
+import com.proyecto.electromarket.dto.EstadoRequest;
 import com.proyecto.electromarket.dto.ProductoRequest;
 import com.proyecto.electromarket.dto.ProductoResponse;
 import com.proyecto.electromarket.entity.Producto;
@@ -15,7 +16,6 @@ public class ProductoServiceImpl implements ProductoService {
 
     private final ProductoRepository productoRepository;
 
-    // Inyección de dependencias por constructor (buena práctica de Spring)
     public ProductoServiceImpl(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
     }
@@ -76,7 +76,8 @@ public class ProductoServiceImpl implements ProductoService {
         nuevo.setPrecio(request.getPrecio());
         nuevo.setUbicacion(request.getUbicacion() != null ? request.getUbicacion().trim() : null);
         nuevo.setStockMinimo(request.getStockMinimo());
-        nuevo.setStockActual(request.getStockActual() != null ? request.getStockActual() : 0);
+        nuevo.setStockActual(request.getStockActual());
+        nuevo.setActivo(true); // Siempre activo al crearse
         nuevo.setUsuarioActualizacion(request.getIdUsuario());
 
         Producto guardado = productoRepository.save(nuevo);
@@ -102,13 +103,27 @@ public class ProductoServiceImpl implements ProductoService {
         existente.setPrecio(request.getPrecio());
         existente.setUbicacion(request.getUbicacion() != null ? request.getUbicacion().trim() : null);
         existente.setStockMinimo(request.getStockMinimo());
-
-        // Enviamos el usuario que actualiza para la auditoría de la BD
-        if (request.getIdUsuario() != null) {
-            existente.setUsuarioActualizacion(request.getIdUsuario());
-        }
+        existente.setStockActual(request.getStockActual());
+        // El PUT NO modifica "activo"
+        existente.setUsuarioActualizacion(request.getIdUsuario());
 
         Producto actualizado = productoRepository.save(existente);
+        return convertirAProductoResponse(actualizado);
+    }
+
+    @Override
+    @Transactional
+    public ProductoResponse cambiarEstado(Integer id, EstadoRequest request) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el producto con ID: " + id));
+
+        producto.setActivo(request.getActivo());
+        // Solo actualizar usuarioActualizacion si idUsuario viene con valor
+        if (request.getIdUsuario() != null) {
+            producto.setUsuarioActualizacion(request.getIdUsuario());
+        }
+
+        Producto actualizado = productoRepository.save(producto);
         return convertirAProductoResponse(actualizado);
     }
 
@@ -125,8 +140,10 @@ public class ProductoServiceImpl implements ProductoService {
                 p.getUbicacion(),
                 p.getStockMinimo(),
                 p.getStockActual(),
+                p.getActivo(),
                 alerta,
                 p.getFechaCreacion(),
-                p.getFechaActualizacion());
+                p.getFechaActualizacion()
+        );
     }
 }

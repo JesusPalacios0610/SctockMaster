@@ -11,6 +11,7 @@ public class EntradaStockResponse {
     private String razonSocialProveedor;
     private Integer idUsuario;
     private String nombreUsuario; // Seguro: solo nombre, sin contraseña
+    private String tipoDocumento;
     private String documento;
     private LocalDate fecha;
     private String estado;
@@ -22,14 +23,15 @@ public class EntradaStockResponse {
     }
 
     public EntradaStockResponse(Integer idEntrada, Integer idProveedor, String razonSocialProveedor,
-                                Integer idUsuario, String nombreUsuario, String documento,
-                                LocalDate fecha, String estado, LocalDateTime fechaCreacion,
-                                List<DetalleEntradaResponse> detalles) {
+                                Integer idUsuario, String nombreUsuario, String tipoDocumento,
+                                String documento, LocalDate fecha, String estado,
+                                LocalDateTime fechaCreacion, List<DetalleEntradaResponse> detalles) {
         this.idEntrada = idEntrada;
         this.idProveedor = idProveedor;
         this.razonSocialProveedor = razonSocialProveedor;
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
+        this.tipoDocumento = tipoDocumento;
         this.documento = documento;
         this.fecha = fecha;
         this.estado = estado;
@@ -76,6 +78,14 @@ public class EntradaStockResponse {
 
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
+    }
+
+    public String getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
     }
 
     public String getDocumento() {

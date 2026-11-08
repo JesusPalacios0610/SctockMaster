@@ -1,5 +1,6 @@
 package com.proyecto.electromarket.controller;
 
+import com.proyecto.electromarket.dto.EstadoRequest;
 import com.proyecto.electromarket.dto.ProductoRequest;
 import com.proyecto.electromarket.dto.ProductoResponse;
 import com.proyecto.electromarket.service.ProductoService;
@@ -7,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,7 +24,6 @@ public class ProductoController {
 
     private final ProductoService productoService;
 
-    // Inyección de dependencias por constructor
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
     }
@@ -45,25 +46,32 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.buscar(termino));
     }
 
-    // GET /api/productos/alertas - Listar productos con stock crítico (bajo stock mínimo)
+    // GET /api/productos/alertas - Listar productos ACTIVOS con stock crítico (bajo stock mínimo)
     @GetMapping("/alertas")
     public ResponseEntity<List<ProductoResponse>> listarBajoStock() {
         return ResponseEntity.ok(productoService.listarBajoStock());
     }
 
     // POST /api/productos - Crear un nuevo producto
-    // @Valid activa las anotaciones de validación de ProductoRequest (@NotBlank, @NotNull, etc.)
     @PostMapping
     public ResponseEntity<ProductoResponse> crear(@Valid @RequestBody ProductoRequest request) {
         ProductoResponse creado = productoService.crear(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
-    // PUT /api/productos/{id} - Actualizar un producto existente
+    // PUT /api/productos/{id} - Actualizar un producto existente (no modifica estado activo)
     @PutMapping("/{id}")
     public ResponseEntity<ProductoResponse> actualizar(
             @PathVariable Integer id,
             @Valid @RequestBody ProductoRequest request) {
         return ResponseEntity.ok(productoService.actualizar(id, request));
+    }
+
+    // PATCH /api/productos/{id}/estado - Cambiar estado activo/inactivo
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<ProductoResponse> cambiarEstado(
+            @PathVariable Integer id,
+            @Valid @RequestBody EstadoRequest request) {
+        return ResponseEntity.ok(productoService.cambiarEstado(id, request));
     }
 }

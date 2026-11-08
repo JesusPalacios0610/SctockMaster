@@ -1,5 +1,6 @@
 package com.proyecto.electromarket.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -18,6 +19,13 @@ public class ProveedorRequest {
     @Size(max = 100, message = "El contacto no puede superar los 100 caracteres")
     private String contacto;
 
+    @Pattern(regexp = "^$|\\d{9}", message = "El teléfono debe tener 9 dígitos numéricos")
+    private String telefono;
+
+    @Email(message = "El formato del correo electrónico no es válido")
+    @Size(max = 100, message = "El correo no puede superar los 100 caracteres")
+    private String correo;
+
     @Min(value = 0, message = "El tiempo de entrega no puede ser negativo")
     private Integer tiempoEntrega;
 
@@ -28,10 +36,13 @@ public class ProveedorRequest {
     public ProveedorRequest() {
     }
 
-    public ProveedorRequest(String ruc, String razonSocial, String contacto, Integer tiempoEntrega, Integer idUsuario) {
+    public ProveedorRequest(String ruc, String razonSocial, String contacto, String telefono,
+                            String correo, Integer tiempoEntrega, Integer idUsuario) {
         this.ruc = ruc;
         this.razonSocial = razonSocial;
         this.contacto = contacto;
+        this.telefono = telefono;
+        this.correo = correo;
         this.tiempoEntrega = tiempoEntrega;
         this.idUsuario = idUsuario;
     }
@@ -59,6 +70,22 @@ public class ProveedorRequest {
 
     public void setContacto(String contacto) {
         this.contacto = contacto;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
     public Integer getTiempoEntrega() {

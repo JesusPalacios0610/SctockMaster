@@ -20,10 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class EntradaStockServiceImpl implements EntradaStockService {
+
+    // Tipos de documento permitidos según las reglas de negocio
+    private static final Set<String> TIPOS_DOC_PERMITIDOS = Set.of("FACTURA", "GUIA_REMISION", "BOLETA");
 
     private final EntradaStockRepository entradaStockRepository;
     private final DetalleEntradaRepository detalleEntradaRepository;
@@ -51,18 +55,29 @@ public class EntradaStockServiceImpl implements EntradaStockService {
             throw new IllegalArgumentException("La entrada debe contener al menos una línea de producto");
         }
 
-        // 2. Validar que exista el Proveedor
+        // 2. Validar tipoDocumento (FACTURA, GUIA_REMISION, BOLETA en mayúsculas)
+        String tipoDoc = request.getTipoDocumento() != null ? request.getTipoDocumento().trim().toUpperCase() : "";
+        if (!TIPOS_DOC_PERMITIDOS.contains(tipoDoc)) {
+            throw new IllegalArgumentException("Tipo de documento inválido: '" + request.getTipoDocumento() + "'. Valores permitidos: FACTURA, GUIA_REMISION, BOLETA");
+        }
+
+        // 3. Validar que exista el Proveedor y esté ACTIVO
         Proveedor proveedor = proveedorRepository.findById(request.getIdProveedor())
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el proveedor con ID: " + request.getIdProveedor()));
 
-        // 3. Validar que exista el Usuario
+        if (Boolean.FALSE.equals(proveedor.getActivo())) {
+            throw new IllegalArgumentException("No se puede registrar una entrada con un proveedor inactivo (ID: " + proveedor.getIdProveedor() + ")");
+        }
+
+        // 4. Validar que exista el Usuario
         Usuario usuario = usuarioRepository.findById(request.getIdUsuario())
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario con ID: " + request.getIdUsuario()));
 
-        // 4. Crear y guardar la cabecera (EntradaStock) con estado 'REGISTRADA'
+        // 5. Crear y guardar la cabecera (EntradaStock)
         EntradaStock entrada = new EntradaStock();
         entrada.setProveedor(proveedor);
         entrada.setUsuario(usuario);
+        entrada.setTipoDocumento(tipoDoc);
         entrada.setDocumento(request.getDocumento().trim());
         entrada.setFecha(request.getFecha() != null ? request.getFecha() : LocalDate.now());
         entrada.setEstado("REGISTRADA");
@@ -70,7 +85,7 @@ public class EntradaStockServiceImpl implements EntradaStockService {
 
         EntradaStock entradaGuardada = entradaStockRepository.save(entrada);
 
-        // 5. Procesar cada detalle y sumar el stock del producto
+        // 6. Procesar cada detalle, validar producto activo y sumar el stock
         List<DetalleEntradaResponse> detallesResponse = new ArrayList<>();
 
         for (DetalleEntradaRequest detalleReq : request.getDetalles()) {
@@ -78,9 +93,14 @@ public class EntradaStockServiceImpl implements EntradaStockService {
                 throw new IllegalArgumentException("La cantidad debe ser mayor que 0 para todos los productos");
             }
 
-            // Validar que el producto exista
+            // Validar existencia del producto
             Producto producto = productoRepository.findById(detalleReq.getIdProducto())
                     .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el producto con ID: " + detalleReq.getIdProducto()));
+
+            // Validar que el producto esté ACTIVO
+            if (Boolean.FALSE.equals(producto.getActivo())) {
+                throw new IllegalArgumentException("No se puede registrar una entrada para un producto inactivo: " + producto.getNombre() + " (SKU: " + producto.getCodigoSku() + ")");
+            }
 
             // Crear y guardar el detalle
             DetalleEntrada detalle = new DetalleEntrada();
@@ -95,7 +115,6 @@ public class EntradaStockServiceImpl implements EntradaStockService {
             producto.setUsuarioActualizacion(request.getIdUsuario());
             productoRepository.save(producto);
 
-            // Agregar a la lista de respuestas
             detallesResponse.add(new DetalleEntradaResponse(
                     detalleGuardado.getIdDetalle(),
                     producto.getIdProducto(),
@@ -139,7 +158,6 @@ public class EntradaStockServiceImpl implements EntradaStockService {
         return construirEntradaResponse(entrada, detalles);
     }
 
-    // Métodos auxiliares de mapeo DTO
     private DetalleEntradaResponse convertirADetalleResponse(DetalleEntrada d) {
         return new DetalleEntradaResponse(
                 d.getIdDetalle(),
@@ -157,6 +175,7 @@ public class EntradaStockServiceImpl implements EntradaStockService {
                 entrada.getProveedor().getRazonSocial(),
                 entrada.getUsuario().getIdUsuario(),
                 entrada.getUsuario().getNombre(),
+                entrada.getTipoDocumento(),
                 entrada.getDocumento(),
                 entrada.getFecha(),
                 entrada.getEstado(),
