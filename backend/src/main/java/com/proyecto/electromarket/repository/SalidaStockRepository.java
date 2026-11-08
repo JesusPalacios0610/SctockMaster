@@ -23,4 +23,17 @@ public interface SalidaStockRepository extends JpaRepository<SalidaStock, Intege
     // Sumar salidas de un producto en una fecha dada usando COALESCE para devolver 0 si no hay registros
     @Query("SELECT COALESCE(SUM(s.cantidad), 0) FROM SalidaStock s WHERE s.producto.idProducto = :idProducto AND s.fecha = :fecha")
     Integer sumarSalidasPorProductoYFecha(@Param("idProducto") Integer idProducto, @Param("fecha") LocalDate fecha);
+
+    // Traer todas las salidas de un producto con JOIN FETCH para evitar N+1
+    @Query("SELECT s FROM SalidaStock s " +
+           "JOIN FETCH s.producto p " +
+           "JOIN FETCH s.usuario u " +
+           "WHERE p.idProducto = :idProducto")
+    List<SalidaStock> findByProductoIdConRelaciones(@Param("idProducto") Integer idProducto);
+
+    // Traer todas las salidas de todos los productos con JOIN FETCH para evitar N+1
+    @Query("SELECT s FROM SalidaStock s " +
+           "JOIN FETCH s.producto p " +
+           "JOIN FETCH s.usuario u")
+    List<SalidaStock> findAllConRelaciones();
 }

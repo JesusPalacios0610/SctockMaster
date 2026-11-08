@@ -17,4 +17,19 @@ public interface DetalleEntradaRepository extends JpaRepository<DetalleEntrada, 
     // Sumar entradas de un producto en una fecha dada usando COALESCE para devolver 0 si no hay registros
     @Query("SELECT COALESCE(SUM(d.cantidad), 0) FROM DetalleEntrada d WHERE d.producto.idProducto = :idProducto AND d.entrada.fecha = :fecha")
     Integer sumarEntradasPorProductoYFecha(@Param("idProducto") Integer idProducto, @Param("fecha") LocalDate fecha);
+
+    // Traer todos los detalles de un producto con JOIN FETCH para evitar N+1
+    @Query("SELECT d FROM DetalleEntrada d " +
+           "JOIN FETCH d.entrada e " +
+           "JOIN FETCH e.usuario u " +
+           "JOIN FETCH d.producto p " +
+           "WHERE p.idProducto = :idProducto")
+    List<DetalleEntrada> findByProductoIdConRelaciones(@Param("idProducto") Integer idProducto);
+
+    // Traer todos los detalles de todos los productos con JOIN FETCH para evitar N+1
+    @Query("SELECT d FROM DetalleEntrada d " +
+           "JOIN FETCH d.entrada e " +
+           "JOIN FETCH e.usuario u " +
+           "JOIN FETCH d.producto p")
+    List<DetalleEntrada> findAllConRelaciones();
 }
