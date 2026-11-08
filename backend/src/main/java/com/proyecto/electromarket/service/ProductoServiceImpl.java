@@ -76,7 +76,7 @@ public class ProductoServiceImpl implements ProductoService {
         nuevo.setPrecio(request.getPrecio());
         nuevo.setUbicacion(request.getUbicacion() != null ? request.getUbicacion().trim() : null);
         nuevo.setStockMinimo(request.getStockMinimo());
-        nuevo.setStockActual(request.getStockActual());
+        nuevo.setStockActual(request.getStockActual() != null ? request.getStockActual() : 0);
         nuevo.setUsuarioActualizacion(request.getIdUsuario());
 
         Producto guardado = productoRepository.save(nuevo);
@@ -102,9 +102,11 @@ public class ProductoServiceImpl implements ProductoService {
         existente.setPrecio(request.getPrecio());
         existente.setUbicacion(request.getUbicacion() != null ? request.getUbicacion().trim() : null);
         existente.setStockMinimo(request.getStockMinimo());
-        existente.setStockActual(request.getStockActual());
+
         // Enviamos el usuario que actualiza para la auditoría de la BD
-        existente.setUsuarioActualizacion(request.getIdUsuario());
+        if (request.getIdUsuario() != null) {
+            existente.setUsuarioActualizacion(request.getIdUsuario());
+        }
 
         Producto actualizado = productoRepository.save(existente);
         return convertirAProductoResponse(actualizado);
@@ -125,7 +127,6 @@ public class ProductoServiceImpl implements ProductoService {
                 p.getStockActual(),
                 alerta,
                 p.getFechaCreacion(),
-                p.getFechaActualizacion()
-        );
+                p.getFechaActualizacion());
     }
 }
