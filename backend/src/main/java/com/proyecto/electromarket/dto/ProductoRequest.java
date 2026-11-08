@@ -35,7 +35,7 @@ public class ProductoRequest {
     @Min(value = 0, message = "El stock mínimo no puede ser negativo")
     private Integer stockMinimo = 0;
 
-    @NotNull(message = "El stock actual es obligatorio")
+    
     @Min(value = 0, message = "El stock actual no puede ser negativo")
     private Integer stockActual = 0;
 

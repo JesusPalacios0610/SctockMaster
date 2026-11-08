@@ -16,6 +16,10 @@ public class EntradaStockRequest {
     @NotNull(message = "El ID del usuario es obligatorio")
     private Integer idUsuario;
 
+    @NotBlank(message = "El tipo de documento es obligatorio")
+    @Size(max = 20, message = "El tipo de documento no puede superar los 20 caracteres")
+    private String tipoDocumento;
+
     @NotBlank(message = "El número de documento es obligatorio")
     @Size(max = 20, message = "El documento no puede superar los 20 caracteres")
     private String documento;
@@ -31,10 +35,11 @@ public class EntradaStockRequest {
     public EntradaStockRequest() {
     }
 
-    public EntradaStockRequest(Integer idProveedor, Integer idUsuario, String documento,
-                               LocalDate fecha, List<DetalleEntradaRequest> detalles) {
+    public EntradaStockRequest(Integer idProveedor, Integer idUsuario, String tipoDocumento,
+                               String documento, LocalDate fecha, List<DetalleEntradaRequest> detalles) {
         this.idProveedor = idProveedor;
         this.idUsuario = idUsuario;
+        this.tipoDocumento = tipoDocumento;
         this.documento = documento;
         this.fecha = fecha;
         this.detalles = detalles;
@@ -55,6 +60,14 @@ public class EntradaStockRequest {
 
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public String getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
     }
 
     public String getDocumento() {

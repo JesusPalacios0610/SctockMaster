@@ -14,6 +14,7 @@ public class ProductoResponse {
     private String ubicacion;
     private Integer stockMinimo;
     private Integer stockActual;
+    private Boolean activo;
     // Campo calculado que le avisa al frontend si este producto está en stock crítico
     private boolean alertaStock;
     private LocalDateTime fechaCreacion;
@@ -26,7 +27,7 @@ public class ProductoResponse {
     public ProductoResponse(Integer idProducto, String codigoSku, String nombre,
                             String categoria, String marca, BigDecimal precio,
                             String ubicacion, Integer stockMinimo, Integer stockActual,
-                            boolean alertaStock, LocalDateTime fechaCreacion,
+                            Boolean activo, boolean alertaStock, LocalDateTime fechaCreacion,
                             LocalDateTime fechaActualizacion) {
         this.idProducto = idProducto;
         this.codigoSku = codigoSku;
@@ -37,6 +38,7 @@ public class ProductoResponse {
         this.ubicacion = ubicacion;
         this.stockMinimo = stockMinimo;
         this.stockActual = stockActual;
+        this.activo = activo;
         this.alertaStock = alertaStock;
         this.fechaCreacion = fechaCreacion;
         this.fechaActualizacion = fechaActualizacion;
@@ -113,6 +115,14 @@ public class ProductoResponse {
 
     public void setStockActual(Integer stockActual) {
         this.stockActual = stockActual;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     public boolean isAlertaStock() {

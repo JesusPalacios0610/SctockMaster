@@ -1,5 +1,6 @@
 package com.proyecto.electromarket.controller;
 
+import com.proyecto.electromarket.dto.EstadoRequest;
 import com.proyecto.electromarket.dto.ProveedorRequest;
 import com.proyecto.electromarket.dto.ProveedorResponse;
 import com.proyecto.electromarket.service.ProveedorService;
@@ -7,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,7 +23,6 @@ public class ProveedorController {
 
     private final ProveedorService proveedorService;
 
-    // Inyección de dependencias por constructor
     public ProveedorController(ProveedorService proveedorService) {
         this.proveedorService = proveedorService;
     }
@@ -51,11 +52,19 @@ public class ProveedorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
-    // PUT /api/proveedores/{id} - Actualizar un proveedor existente
+    // PUT /api/proveedores/{id} - Actualizar un proveedor existente (no modifica estado activo)
     @PutMapping("/{id}")
     public ResponseEntity<ProveedorResponse> actualizar(
             @PathVariable Integer id,
             @Valid @RequestBody ProveedorRequest request) {
         return ResponseEntity.ok(proveedorService.actualizar(id, request));
+    }
+
+    // PATCH /api/proveedores/{id}/estado - Cambiar estado activo/inactivo
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<ProveedorResponse> cambiarEstado(
+            @PathVariable Integer id,
+            @Valid @RequestBody EstadoRequest request) {
+        return ResponseEntity.ok(proveedorService.cambiarEstado(id, request));
     }
 }

@@ -52,11 +52,16 @@ public class SalidaStockServiceImpl implements SalidaStockService {
         Usuario usuario = usuarioRepository.findById(request.getIdUsuario())
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el usuario con ID: " + request.getIdUsuario()));
 
-        // 4. Obtener el Producto con Bloqueo Pesimista (FOR UPDATE) para proteger la concurrencia
+        // 4. Obtener el Producto con Bloqueo Pesimista (FOR UPDATE)
         Producto producto = productoRepository.findByIdConBloqueo(request.getIdProducto())
                 .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró el producto con ID: " + request.getIdProducto()));
 
-        // 5. Validar que el stock NUNCA quede negativo
+        // 5. Validar que el producto esté ACTIVO
+        if (Boolean.FALSE.equals(producto.getActivo())) {
+            throw new IllegalArgumentException("No se puede registrar una salida para un producto inactivo: " + producto.getNombre() + " (SKU: " + producto.getCodigoSku() + ")");
+        }
+
+        // 6. Validar que el stock NUNCA quede negativo
         int stockDisponible = producto.getStockActual() != null ? producto.getStockActual() : 0;
         if (request.getCantidad() > stockDisponible) {
             throw new IllegalArgumentException(
@@ -64,16 +69,22 @@ public class SalidaStockServiceImpl implements SalidaStockService {
             );
         }
 
-        // 6. Restar la cantidad a producto.stock_actual
+        // 7. Restar la cantidad a producto.stock_actual
         int nuevoStock = stockDisponible - request.getCantidad();
         producto.setStockActual(nuevoStock);
         producto.setUsuarioActualizacion(request.getIdUsuario());
         productoRepository.save(producto);
 
-        // 7. Crear y guardar la entidad SalidaStock
+        // 8. Crear y guardar la entidad SalidaStock (con documento opcional limpio)
+        String docLimpio = request.getDocumento() != null ? request.getDocumento().trim() : null;
+        if (docLimpio != null && docLimpio.isEmpty()) {
+            docLimpio = null;
+        }
+
         SalidaStock salida = new SalidaStock();
         salida.setProducto(producto);
         salida.setUsuario(usuario);
+        salida.setDocumento(docLimpio);
         salida.setFecha(request.getFecha() != null ? request.getFecha() : LocalDate.now());
         salida.setTipoSalida(tipo);
         salida.setCantidad(request.getCantidad());
@@ -101,7 +112,6 @@ public class SalidaStockServiceImpl implements SalidaStockService {
         return convertirAResponse(salida, salida.getProducto().getStockActual());
     }
 
-    // Auxiliar para mapear a SalidaStockResponse DTO
     private SalidaStockResponse convertirAResponse(SalidaStock s, Integer stockRestante) {
         return new SalidaStockResponse(
                 s.getIdSalida(),
@@ -110,6 +120,7 @@ public class SalidaStockServiceImpl implements SalidaStockService {
                 s.getProducto().getNombre(),
                 s.getUsuario().getIdUsuario(),
                 s.getUsuario().getNombre(),
+                s.getDocumento(),
                 s.getFecha(),
                 s.getTipoSalida(),
                 s.getCantidad(),

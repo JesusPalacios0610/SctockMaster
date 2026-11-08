@@ -45,6 +45,9 @@ public class Producto {
     @Column(name = "stock_actual", nullable = false)
     private Integer stockActual = 0;
 
+    @Column(name = "activo", nullable = false)
+    private Boolean activo = true;
+
     // Llenado por default en la BD al hacer INSERT
     @Column(name = "fecha_creacion", insertable = false, updatable = false)
     private LocalDateTime fechaCreacion;
@@ -72,6 +75,7 @@ public class Producto {
         this.ubicacion = ubicacion;
         this.stockMinimo = stockMinimo != null ? stockMinimo : 0;
         this.stockActual = stockActual != null ? stockActual : 0;
+        this.activo = true;
     }
 
     // Getters y Setters
@@ -84,7 +88,6 @@ public class Producto {
     }
 
     public String getCodigoSku() {
-        // En PostgreSQL CHAR(20) rellena con espacios a la derecha; trim() los limpia
         return codigoSku != null ? codigoSku.trim() : null;
     }
 
@@ -146,6 +149,14 @@ public class Producto {
 
     public void setStockActual(Integer stockActual) {
         this.stockActual = stockActual;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     public LocalDateTime getFechaCreacion() {

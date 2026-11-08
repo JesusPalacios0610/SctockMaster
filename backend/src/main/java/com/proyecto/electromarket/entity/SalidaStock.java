@@ -31,6 +31,9 @@ public class SalidaStock {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
+    @Column(name = "documento", length = 20)
+    private String documento;
+
     @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
@@ -50,9 +53,10 @@ public class SalidaStock {
     }
 
     // Constructor para registrar una salida de stock
-    public SalidaStock(Producto producto, Usuario usuario, LocalDate fecha, String tipoSalida, Integer cantidad) {
+    public SalidaStock(Producto producto, Usuario usuario, String documento, LocalDate fecha, String tipoSalida, Integer cantidad) {
         this.producto = producto;
         this.usuario = usuario;
+        this.documento = documento;
         this.fecha = fecha != null ? fecha : LocalDate.now();
         this.tipoSalida = tipoSalida;
         this.cantidad = cantidad;
@@ -81,6 +85,14 @@ public class SalidaStock {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     public LocalDate getFecha() {

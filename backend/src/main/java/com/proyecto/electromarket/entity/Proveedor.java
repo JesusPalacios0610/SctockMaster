@@ -29,8 +29,17 @@ public class Proveedor {
     @Column(name = "contacto", length = 100)
     private String contacto;
 
+    @Column(name = "telefono", length = 15)
+    private String telefono;
+
+    @Column(name = "correo", length = 100)
+    private String correo;
+
     @Column(name = "tiempo_entrega")
     private Integer tiempoEntrega;
+
+    @Column(name = "activo", nullable = false)
+    private Boolean activo = true;
 
     // Llenado por default en la BD al hacer INSERT
     @Column(name = "fecha_creacion", insertable = false, updatable = false)
@@ -49,11 +58,14 @@ public class Proveedor {
     }
 
     // Constructor para facilitar la creación de instancias
-    public Proveedor(String ruc, String razonSocial, String contacto, Integer tiempoEntrega) {
+    public Proveedor(String ruc, String razonSocial, String contacto, String telefono, String correo, Integer tiempoEntrega) {
         this.ruc = ruc;
         this.razonSocial = razonSocial;
         this.contacto = contacto;
+        this.telefono = telefono;
+        this.correo = correo;
         this.tiempoEntrega = tiempoEntrega;
+        this.activo = true;
     }
 
     // Getters y Setters
@@ -66,7 +78,6 @@ public class Proveedor {
     }
 
     public String getRuc() {
-        // En PostgreSQL CHAR(11) rellena con espacios a la derecha; trim() los limpia
         return ruc != null ? ruc.trim() : null;
     }
 
@@ -90,12 +101,36 @@ public class Proveedor {
         this.contacto = contacto;
     }
 
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
     public Integer getTiempoEntrega() {
         return tiempoEntrega;
     }
 
     public void setTiempoEntrega(Integer tiempoEntrega) {
         this.tiempoEntrega = tiempoEntrega;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     public LocalDateTime getFechaCreacion() {

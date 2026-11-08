@@ -31,6 +31,9 @@ public class EntradaStock {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
+    @Column(name = "tipo_documento", nullable = false, length = 20)
+    private String tipoDocumento = "FACTURA";
+
     @Column(name = "documento", nullable = false, length = 20)
     private String documento;
 
@@ -57,9 +60,10 @@ public class EntradaStock {
     }
 
     // Constructor para registrar una entrada
-    public EntradaStock(Proveedor proveedor, Usuario usuario, String documento, LocalDate fecha, String estado) {
+    public EntradaStock(Proveedor proveedor, Usuario usuario, String tipoDocumento, String documento, LocalDate fecha, String estado) {
         this.proveedor = proveedor;
         this.usuario = usuario;
+        this.tipoDocumento = tipoDocumento != null ? tipoDocumento : "FACTURA";
         this.documento = documento;
         this.fecha = fecha != null ? fecha : LocalDate.now();
         this.estado = estado != null ? estado : "REGISTRADA";
@@ -88,6 +92,14 @@ public class EntradaStock {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public String getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(String tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
     }
 
     public String getDocumento() {

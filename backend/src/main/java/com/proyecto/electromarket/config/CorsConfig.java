@@ -13,9 +13,9 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 // Permite peticiones únicamente desde el puerto donde corre Vite/React
                 .allowedOrigins("http://localhost:5173")
-                // Métodos HTTP permitidos
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                // Cabeceras permitidas (incluyendo Content-Type, Authorization, etc.)
+                // Métodos HTTP permitidos (incluyendo PATCH)
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                // Cabeceras permitidas
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
